@@ -1,0 +1,41 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "main",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}",
+            "args": [],
+            "env": {},
+            "cwd": "${workspaceFolder}",
+            "showLog": true
+        },
+        {
+            "name": "Service",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/service",
+            "args": [],
+            "env": {},
+            "cwd": "${workspaceFolder}/cmd/service",
+            "showLog": true
+        },
+        {
+            "name": "Cli",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/cli",
+            "args": [
+                "arg1",
+                "arg2"
+            ],
+            "env": {},
+            "cwd": "${workspaceFolder}/cmd/cli",
+            "showLog": true
+        }
+    ]
+}
