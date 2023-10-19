@@ -15,12 +15,18 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
+	// Anonymous routes
+	r.POST("api/auth/login", api.Login)
+
 	base := r.Group("/api")
 	base.Use(jwt.JWT())
 	{
-		r.GET("/ping", api.Ping)
+		base.GET("/ping", api.Ping)
 
+		authRoutes := base.Group("/auth")
+		{
+			authRoutes.POST("/logout", api.Logout)
+		}
 	}
-
 	return r
 }

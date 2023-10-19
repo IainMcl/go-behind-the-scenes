@@ -15,11 +15,12 @@ func JWT() gin.HandlerFunc {
 		var data interface{}
 
 		code = 200
-		token := c.Query("token")
-		if token == "" {
+		authHeader := c.Request.Header.Get("Authorization")
+		if authHeader == "" {
 			code = 400
 		} else {
-			_, err := util.ParseToken(token)
+			tokenString := authHeader[len("Bearer "):]
+			_, err := util.ParseToken(tokenString)
 			if err != nil {
 				switch err.(*jwt.ValidationError).Errors {
 				case jwt.ValidationErrorExpired:
@@ -35,12 +36,9 @@ func JWT() gin.HandlerFunc {
 				"code": code,
 				"data": data,
 			})
-
 			c.Abort()
 			return
 		}
-
 		c.Next()
-
 	}
 }
