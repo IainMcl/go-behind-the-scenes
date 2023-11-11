@@ -21,3 +21,6 @@ go.work
 
 logs/
 *.log
+
+.env
+config.ini

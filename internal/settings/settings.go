@@ -1,9 +1,10 @@
 package settings
 
 import (
+	"log"
 	"time"
 
-	"github.com/spf13/viper"
+	"github.com/go-ini/ini"
 )
 
 type App struct {
@@ -18,7 +19,7 @@ type App struct {
 	TimeFormat  string
 }
 
-var AppSetting = &App{}
+var AppSettings = &App{}
 
 type Server struct {
 	RunMode      string
@@ -27,30 +28,39 @@ type Server struct {
 	WriteTimeout time.Duration
 }
 
-var ServerSetting = &Server{}
+var ServerSettings = &Server{}
+
+type Database struct {
+	Type         string
+	User         string
+	Password     string
+	Host         string
+	Port         string
+	DbName       string
+	SSLMode      string
+	MaxIdleConns int
+	MaxOpenConns int
+}
+
+var DatabaseSettings = &Database{}
+
+var cfg *ini.File
 
 func Setup() {
-	viper.SetConfigName("config")
-	viper.AddConfigPath(".")
-	viper.SetConfigType("ini")
-
-	err := viper.ReadInConfig()
+	var err error
+	cfg, err = ini.Load("config.ini")
 	if err != nil {
-		panic(err)
+		log.Fatal("Fail to parse 'config.ini': %v", err)
 	}
 
-	// Set the values of the AppSetting variable
-	AppSetting.JwtSecret = viper.GetString("app.jwt_secret")
-	AppSetting.PageSize = viper.GetInt("app.page_size")
-	AppSetting.RuntimeRootPath = viper.GetString("app.runtime_root_path")
-	AppSetting.LogSavePath = viper.GetString("app.log_save_path")
-	AppSetting.LogSaveName = viper.GetString("app.log_save_name")
-	AppSetting.LogFileExt = viper.GetString("app.log_file_ext")
-	AppSetting.TimeFormat = viper.GetString("app.time_format")
+	mapTo("app", AppSettings)
+	mapTo("server", ServerSettings)
+	mapTo("database", DatabaseSettings)
+}
 
-	// Set the values of the ServerSetting variable
-	ServerSetting.RunMode = viper.GetString("server.run_mode")
-	ServerSetting.HttpPort = viper.GetInt("server.http_port")
-	ServerSetting.ReadTimeout = viper.GetDuration("server.read_timeout") * time.Second
-	ServerSetting.WriteTimeout = viper.GetDuration("server.write_timeout") * time.Second
+func mapTo(section string, v interface{}) {
+	err := cfg.Section(section).MapTo(v)
+	if err != nil {
+		log.Fatal("Cfg.MapTo %s err: %v", section, err)
+	}
 }

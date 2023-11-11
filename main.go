@@ -2,11 +2,11 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/IainMcl/go-behind-the-scenes/internal/logging"
 	"github.com/IainMcl/go-behind-the-scenes/internal/settings"
+	"github.com/IainMcl/go-behind-the-scenes/models"
 	"github.com/IainMcl/go-behind-the-scenes/router"
 )
 
@@ -14,16 +14,17 @@ func init() {
 	// log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 
 	settings.Setup()
+	models.Setup()
 	logging.Setup()
 }
 
 func main() {
-	log.Println("Starting the application...")
+	logging.Info("Starting the application...")
 
 	routersInit := router.InitRouter()
-	readTimeout := settings.ServerSetting.ReadTimeout
-	writeTimeout := settings.ServerSetting.WriteTimeout
-	endPoint := fmt.Sprintf(":%d", settings.ServerSetting.HttpPort)
+	readTimeout := settings.ServerSettings.ReadTimeout
+	writeTimeout := settings.ServerSettings.WriteTimeout
+	endPoint := fmt.Sprintf(":%d", settings.ServerSettings.HttpPort)
 	maxHeaderBytes := 1 << 20
 
 	server := &http.Server{
@@ -35,6 +36,5 @@ func main() {
 	}
 
 	server.ListenAndServe()
-
-	log.Printf("[info] start http server listening %s", endPoint)
+	logging.Info("Closing the application...")
 }
