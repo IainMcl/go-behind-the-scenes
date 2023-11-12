@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/IainMcl/go-behind-the-scenes/internal/logging"
 	"github.com/IainMcl/go-behind-the-scenes/internal/settings"
@@ -11,8 +12,6 @@ import (
 )
 
 func init() {
-	// log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
-
 	settings.Setup()
 	models.Setup()
 	logging.Setup()
@@ -22,8 +21,8 @@ func main() {
 	logging.Info("Starting the application...")
 
 	routersInit := router.InitRouter()
-	readTimeout := settings.ServerSettings.ReadTimeout
-	writeTimeout := settings.ServerSettings.WriteTimeout
+	readTimeout := settings.ServerSettings.ReadTimeout * time.Second
+	writeTimeout := settings.ServerSettings.WriteTimeout * time.Second
 	endPoint := fmt.Sprintf(":%d", settings.ServerSettings.HttpPort)
 	maxHeaderBytes := 1 << 20
 

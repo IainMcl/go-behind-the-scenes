@@ -33,5 +33,17 @@ func Setup() {
 	sqlDB.SetMaxIdleConns(settings.DatabaseSettings.MaxIdleConns)
 	sqlDB.SetMaxOpenConns(settings.DatabaseSettings.MaxOpenConns)
 
-	db.AutoMigrate(&User{})
+	if err := db.AutoMigrate(&Role{}); err != nil {
+		logging.Fatal("models.Setup err: %v", err)
+	}
+
+	adminRole := Role{Name: "admin", RateLimit: 1000}
+	userRole := Role{Name: "user", RateLimit: 100}
+
+	db.Create(&userRole)
+	db.Create(&adminRole)
+
+	if err := db.AutoMigrate(&User{}); err != nil {
+		logging.Fatal("models.Setup err: %v", err)
+	}
 }

@@ -14,6 +14,7 @@ type user struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Email    string `json:"email"`
+	Role     string `json:"role"`
 }
 
 func Login(c *gin.Context) {
@@ -33,9 +34,9 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if models.TryLogin(u.Username, u.Email, u.Password) {
+	if models.VerifyPassword(u.Username, u.Email, u.Password) {
 
-		token, err := util.GenerateToken(u.Username)
+		token, err := util.GenerateToken(u.Username, u.Role)
 		if err != nil {
 			data = err.Error()
 			logging.Error("Error generating token: ", err.Error())

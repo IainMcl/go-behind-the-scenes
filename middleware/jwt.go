@@ -1,4 +1,4 @@
-package jwt
+package middleware
 
 import (
 	"net/http"
@@ -20,7 +20,7 @@ func JWT() gin.HandlerFunc {
 			code = 400
 		} else {
 			tokenString := authHeader[len("Bearer "):]
-			_, err := util.ParseToken(tokenString)
+			claims, err := util.ParseToken(tokenString)
 			if err != nil {
 				switch err.(*jwt.ValidationError).Errors {
 				case jwt.ValidationErrorExpired:
@@ -29,6 +29,8 @@ func JWT() gin.HandlerFunc {
 					code = 20001
 				}
 			}
+			// Set the userRole in the context
+			c.Set("userRole", claims.Role)
 		}
 
 		if code != 200 {
